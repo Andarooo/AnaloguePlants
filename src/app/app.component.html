@@ -1,0 +1,27 @@
+
+<div>
+  <h2>Plant Finder</h2>
+  Select a location and enter a radius (in kilometers) to find plants in the area.
+  <div>
+    <label>Location: </label>
+    <input id="location" type="text">
+    <div>
+      <label>Radius: </label>
+      <input id="radius" type="number"/>
+    </div>
+    <button (click)="getPlantsForLocation()">Submit</button>  
+
+    <div ngbAccordion [closeOthers]="true">
+      <div ngbAccordionItem *ngFor="let plant of plantList">
+        <h2 ngbAccordionHeader>
+          <button ngbAccordionButton>{{plant.scientificName}}</button>
+        </h2>
+        <div ngbAccordionCollapse>
+          <div ngbAccordionBody>
+            <ng-template>{{plant.traits[0].trait_name}}</ng-template>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
