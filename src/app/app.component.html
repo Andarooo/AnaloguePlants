@@ -17,8 +17,8 @@
           <button ngbAccordionButton>{{plant.scientificName}}</button>
         </h2>
         <div ngbAccordionCollapse>
-          <div ngbAccordionBody>
-            <ng-template>{{plant.traits[0].trait_name}}</ng-template>
+          <div ngbAccordionBody *ngFor="let trait of plant.traits">
+            <ng-template>{{trait.trait_name}}  Min:{{trait.min}}  Max:{{trait.max}}  Mean:{{trait.mean}}  Units:{{trait.unit}}</ng-template>
           </div>
         </div>
       </div>

@@ -3,6 +3,7 @@ import { RouterOutlet } from '@angular/router';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { NgbAccordionModule} from '@ng-bootstrap/ng-bootstrap';
+import { environment } from './../environments/environment';
 
 
 @Component({
@@ -17,11 +18,7 @@ export class AppComponent {
   
   constructor(private readonly httpClient: HttpClient) { }
   plantList : any[] = [];
-  biocacheURL = 'https://biocache.ala.org.au/ws/occurrences/facets';
-  traitURL = 'https://bie.ala.org.au/externalSite/ausTraitsSummary';
-  speciesURL = 'https://api.ala.org.au/species/species/lookup/bulk';
-  geocodeURL = 'https://maps.googleapis.com/maps/api/geocode/json';
-  apiKey = '';
+
 
   getPlantsForLocation()
   {
@@ -32,7 +29,7 @@ export class AppComponent {
       results : {geometry: {location: {lat:number,lng:number}}}[]
     }
 
-    this.httpClient.get<geocodeResponse>(`${this.geocodeURL}`,{params:{key:this.apiKey,address:location}}).subscribe(locRes => {
+    this.httpClient.get<geocodeResponse>(`${environment.geocodeURL}`,{params:{key:environment.GoogleAPIKey,address:location}}).subscribe(locRes => {
       var options = {params:
         {
           q:"kingdom:Plantae",
@@ -40,7 +37,7 @@ export class AppComponent {
           lon:locRes.results[0].geometry.location.lng,
           radius:radius,
           facets: "scientificName",
-          flimit: 10
+          flimit: 2
         }
       }
       debugger;
@@ -78,17 +75,15 @@ export class AppComponent {
             traits: trait[]
         };
 
-      this.httpClient.get<BiocacheResponseItem[]>(`${this.biocacheURL}`,options).subscribe(bcr => {
-        this.httpClient.post<SpeciesResponse[]>(this.speciesURL,{vernacular:false,names:bcr[0].fieldResult.map(r => r.label)}).subscribe(speciesList => { 
-          var list : PlantRecord[] = []
+      this.httpClient.get<BiocacheResponseItem[]>(`${environment.biocacheURL}`,options).subscribe(bcr => {
+        this.httpClient.post<SpeciesResponse[]>(environment.speciesURL,{vernacular:false,names:bcr[0].fieldResult.map(r => r.label)}).subscribe(speciesList => { 
+          let list : PlantRecord[] = []
           for(let record of bcr[0].fieldResult){
-            var plantRecord : PlantRecord = {scientificName : record.label,traits:[]};
+            let plantRecord : PlantRecord = {scientificName : record.label,traits:[]};
             list.push(plantRecord);
-            var searchGuid : string = speciesList.find(sr => sr.name === record.label)?.name ?? "";
-            this.httpClient.get<TraitsResponse>(`${this.traitURL}`,{params:{s:record.label, guid: searchGuid}}).subscribe(tr => {
+            let searchGuid : string = speciesList.find(sr => sr.name === record.label)?.name ?? "";
+            this.httpClient.get<TraitsResponse>(`${environment.traitURL}`,{params:{s:record.label, guid: searchGuid}}).subscribe(tr => {
               plantRecord.traits = tr.numeric_traits;
-              
-              debugger;
             });
           }
           this.plantList = list
