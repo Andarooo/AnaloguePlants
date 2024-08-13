@@ -1,24 +1,60 @@
+<div class="container">
+  <div class="card card-default mb-3 mt-5">
+    <div class="card-body">
+      <h2 class="card-title">Plant Finder</h2>
+      <h5>Select a location and enter a radius (in kilometers) to find plants in the area.</h5>
+      <div class="form-floating mb-3">
+        <input id="location" type="text" class="form-control" placeholder="e.g. Perth">
+        <label for="location">Location</label>
+      </div>
+      <div class="form-floating mb-3">
+        <input id="radius" type="number" class="form-control" />
+        <label for="radius">Radius (km)</label>
+      </div>
+      <button class="btn btn-secondary" (click)="getPlantsForLocation()">Submit</button>
 
-<div>
-  <h2>Plant Finder</h2>
-  Select a location and enter a radius (in kilometers) to find plants in the area.
-  <div>
-    <label>Location: </label>
-    <input id="location" type="text">
-    <div>
-      <label>Radius: </label>
-      <input id="radius" type="number"/>
     </div>
-    <button (click)="getPlantsForLocation()">Submit</button>  
-
-    <div ngbAccordion [closeOthers]="true">
-      <div ngbAccordionItem *ngFor="let plant of plantList">
-        <h2 ngbAccordionHeader>
-          <button ngbAccordionButton>{{plant.scientificName}}</button>
-        </h2>
-        <div ngbAccordionCollapse>
-          <div ngbAccordionBody *ngFor="let trait of plant.traits">
-            <ng-template>{{trait.trait_name}}  Min:{{trait.min}}  Max:{{trait.max}}  Mean:{{trait.mean}}  Units:{{trait.unit}}</ng-template>
+  </div>
+  <div class="card card-default mb-3" [hidden]="plantList.length == 0">
+    <div class="card-body">
+      <h3 class="card-title">Sorting</h3>
+    </div>
+  </div>
+  <div class="card card-default" [hidden]="plantList.length == 0">
+    <div class="card-body">
+      <h3 class="card-title">Results</h3>
+      <div ngbAccordion [closeOthers]="true">
+        <div ngbAccordionItem *ngFor="let plant of plantList">
+          <h2 ngbAccordionHeader>
+            <button ngbAccordionButton>{{plant.scientificName}}</button>
+          </h2>
+          <div ngbAccordionCollapse>
+            <div ngbAccordionBody><ng-template>
+                <div ngbAccordion [closeOthers]="true">
+                  <div ngbAccordionItem>
+                    <h2 ngbAccordionHeader>
+                      <button ngbAccordionButton>Numerical Traits</button>
+                    </h2>
+                    <div ngbAccordionCollapse>
+                      <div ngbAccordionBody *ngFor="let Trait of plant.numericTraits">
+                        <ng-template>{{Trait.trait_name}} Min:{{Trait.min}} Max:{{Trait.max}} Mean:{{Trait.mean}}
+                          Units:{{Trait.unit}}</ng-template>
+                      </div>
+                    </div>
+                  </div>
+                  <div ngbAccordionItem>
+                    <h2 ngbAccordionHeader>
+                      <button ngbAccordionButton>Categorical Traits</button>
+                    </h2>
+                    <div ngbAccordionCollapse>
+                      <div ngbAccordionBody *ngFor="let Trait of plant.categoricalTraits">
+                        <ng-template>{{Trait.trait_name}}: {{Trait.trait_values}}</ng-template>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </ng-template>
+            </div>
           </div>
         </div>
       </div>
